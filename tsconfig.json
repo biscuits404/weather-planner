@@ -1,26 +1,21 @@
 {
-// Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    "rootDir": "./src",
-    "outDir": "./dist",
+    
 
-// Environment Settings
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
 // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": [],
 
-// Other Outputs
     "sourceMap": true,
 
-// Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
 
-// Recommended Options
     "strict": true,
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
