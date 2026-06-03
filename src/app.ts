@@ -4,7 +4,9 @@ const aussieCities = {
     melbourne: { lat: -37.8714, lon: 144.9633 },
     sydney: { lat: -33.8678, lon: 151.2073 },
     adelaide: { lat: -34.9287, lon: 138.5986 }
-};
+} as const;
+
+type AussieCity = keyof typeof aussieCities;
 
 const wmoRainRules = {
     0:  { desc: "Clear sky", rainGear: "None needed" },
@@ -41,13 +43,15 @@ const wmoRainRules = {
     86: { desc: "Violent snow showers", rainGear: "Raincoat and waterproof shoes" },
     
     95: { desc: "Thunderstorm", rainGear: "Raincoat and seek indoor shelter" }
-};
+} as const;
 
-const citySelect = document.getElementById('citySelect');
+type WmoCode = keyof typeof wmoRainRules;
+
+const citySelect = document.getElementById('citySelect') as HTMLSelectElement;
 const getWeatherBtn = document.getElementById('getWeatherBtn');
 const packingResult = document.getElementById('packingResult');
 
-async function getPlan(cityName) {
+async function getPlan(cityName: AussieCity) {
     const coordinates = aussieCities[cityName];
     
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${coordinates.lat}&longitude=${coordinates.lon}&current=temperature_2m,weather_code&timezone=auto`;
@@ -68,26 +72,38 @@ async function getPlan(cityName) {
             tempPack = "Sunglasses, sunscreen, and light summer clothes.";
         }
 
-        const weatherMatch = wmoRainRules[currentCode] || { desc: "Clear conditions", rainGear: "None needed" };
+        const weatherMatch = wmoRainRules[currentCode as keyof typeof wmoRainRules] || { desc: "Clear conditions", rainGear: "None needed" };
         let rainPack = weatherMatch.rainGear;
 
-        packingResult.innerHTML = `
+        if (packingResult){packingResult.innerHTML = `
             <h3>Destination: ${cityName.toUpperCase()}</h3>
             <p><strong>Temperature:</strong> ${currentTemp}°C</p>
             <p><strong>Weather Condition:</strong> ${weatherMatch.desc}</p>
             <hr style="border: 0.5px solid #444; margin: 15px 0;">
             <p><strong>Packing:</strong> ${tempPack}</p>
             <p><strong>Rain:</strong> ${rainPack}</p>
-        `;
+        `;} else
+            {console.error("Could not find the packingResult element in the DOM!");
+          }
 
     } catch (error) {
-        document.getElementById('packingResult').innerHTML = `<p style="color: red;">Error contacting weather grid.</p>`;
+        const errorDisplay = document.getElementById('packingResult');
+        if (errorDisplay) {
+            errorDisplay.innerHTML = `<p style="color: red;">Error contacting weather grid.</p>`;
+        } else {
+            console.error("Could not find packingResult element to show the error message.");
+        }
         console.error("API Error: ", error);
     }
 }
 
-getWeatherBtn.addEventListener('click', () => {
-    getPlan(citySelect.value);
-});
+if (getWeatherBtn) {getWeatherBtn.addEventListener('click', () => {
+    getPlan(citySelect.value as AussieCity);
+    });
+    }     
+    else {
+        console.error("Could not find getWeatherBtn element in the DOM.");
+    }
+;
 
 getPlan("brisbane");
