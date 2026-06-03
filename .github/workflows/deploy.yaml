@@ -10,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -25,7 +24,7 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4  
-      
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4  
         with:
@@ -40,17 +39,15 @@ jobs:
       - name: Install Dependencies
         run: pnpm install
 
+      
       - name: Build Site
-        run: |
-          pnpm exec tsc
-          cp -r index.html dist/    
-          cp ./src/style.css dist/
+        run: pnpm build
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: dist 
       
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
